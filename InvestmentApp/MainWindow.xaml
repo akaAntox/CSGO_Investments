@@ -1,0 +1,111 @@
+﻿<Window x:Class="InvestmentApp.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:InvestmentApp"
+        mc:Ignorable="d"
+        Title="Investimenti" Width="960" Height="540">
+    <Grid>
+        <DataGrid x:Name="MainDataGrid" Margin="10,37,10,10" AutoGenerateColumns="False" IsReadOnly="True">
+            <DataGrid.Resources>
+                <Style x:Key="DeleteItemContextMenuStyle" TargetType="MenuItem">
+                    <EventSetter Event="Click" Handler="MenuItem_Click"/>
+                </Style>
+                <Style TargetType="DataGridRow">
+                    <Setter Property="ContextMenu">
+                        <Setter.Value>
+                            <ContextMenu>
+                                <MenuItem Header="Rimuovi" Style="{StaticResource DeleteItemContextMenuStyle}"/>
+                            </ContextMenu>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </DataGrid.Resources>
+            <DataGrid.Columns>
+                <DataGridTextColumn Width="Auto" Binding="{Binding Name}" Header="Nome"/>
+                <DataGridTextColumn Width="Auto" Binding="{Binding Qty}" Header="Quantità" />
+                <DataGridTemplateColumn Width="Auto" Header="Prezzo" >
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <DockPanel>
+                                <TextBlock DockPanel.Dock="Left" Text="€ "/>
+                                <TextBlock DockPanel.Dock="Right" Text="{Binding Price}" TextAlignment="Right"/>
+                            </DockPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Width="Auto" Header="Prezzo minimo">
+                    <DataGridTemplateColumn.CellStyle>
+                        <Style TargetType="{x:Type DataGridCell}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsPositive}" Value="True">
+                                    <Setter Property="Background" Value="LightGreen" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsPositive}" Value="False">
+                                    <Setter Property="Background" Value="IndianRed" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsPositive}" Value="null">
+                                    <Setter Property="Background" Value="White" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </DataGridTemplateColumn.CellStyle>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <DockPanel>
+                                <TextBlock DockPanel.Dock="Left" Text="€ "/>
+                                <TextBlock DockPanel.Dock="Right" Text="{Binding SellPrice}" TextAlignment="Right"/>
+                            </DockPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Width="Auto" Header="Prezzo medio">
+                    <DataGridTemplateColumn.CellStyle>
+                        <Style TargetType="{x:Type DataGridCell}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsPositiveMedium}" Value="True">
+                                    <Setter Property="Background" Value="LightGreen" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsPositiveMedium}" Value="False">
+                                    <Setter Property="Background" Value="IndianRed" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsPositiveMedium}" Value="null">
+                                    <Setter Property="Background" Value="White" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </DataGridTemplateColumn.CellStyle>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <DockPanel>
+                                <TextBlock DockPanel.Dock="Left" Text="€ "/>
+                                <TextBlock DockPanel.Dock="Right" Text="{Binding MediumPrice}" TextAlignment="Right"/>
+                            </DockPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Width="Auto" Header="Totale" >
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <DockPanel>
+                                <TextBlock DockPanel.Dock="Left" Text="€ "/>
+                                <TextBlock DockPanel.Dock="Right" Text="{Binding Total}" TextAlignment="Right"/>
+                            </DockPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Width="Auto" Binding="{Binding Category}" Header="Categoria" />
+            </DataGrid.Columns>
+        </DataGrid>
+        <Button x:Name="ButtonAddItem" Content="Nuovo" Margin="0,37,10,0" VerticalAlignment="Top" Height="25" Click="ButtonAddItem_Click" HorizontalAlignment="Right" Width="49"/>
+        <Button x:Name="ButtonReload" Margin="0,10,10,0" VerticalAlignment="Top" Height="22" Click="ButtonReload_Click" HorizontalAlignment="Right" Width="22">
+            <Image Source="https://cdn.iconscout.com/icon/free/png-256/reload-1912200-1617669.png"/>
+        </Button>
+        <Button x:Name="ButtonNewCat" Margin="0,10,37,0" VerticalAlignment="Top" Height="22" HorizontalAlignment="Right" Width="22" Click="ButtonEditCat_Click">
+            <Image Source="http://simpleicon.com/wp-content/uploads/pen-2.png"/>
+        </Button>
+        <ComboBox x:Name="ComboBoxCats" Text="Mostra tutto" SelectionChanged="ComboBoxCats_SelectionChanged" Margin="10,10,64,0" VerticalAlignment="Top" ItemsSource="{Binding Categories}" DisplayMemberPath="Name"/>
+        <ProgressBar x:Name="MainGridProgressBar" Margin="130,238,130,238" IsIndeterminate="True" Visibility="Hidden" />
+    </Grid>
+</Window>
