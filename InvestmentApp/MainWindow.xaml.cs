@@ -1,4 +1,5 @@
-﻿using InvestmentApp.Handlers;
+﻿using InvestmentApp.Converters;
+using InvestmentApp.Handlers;
 using InvestmentApp.Models;
 using System;
 using System.Collections.Generic;
@@ -139,10 +140,20 @@ namespace InvestmentApp
             {
                 MainGridProgressBar.Dispatcher.Invoke(() => MainGridProgressBar.Visibility = Visibility.Visible);
                 MainDataGrid.Dispatcher.Invoke(() => MainDataGrid.IsEnabled = false);
-                await PriceHandler.ScrapePricesAsync(Items.Where(item => ComboBoxCats.Text != "Mostra tutto" ? 
-                                                                         item.Category == ComboBoxCats.Text : true));
+
+                string text = string.Empty;
+                ComboBoxCats.Dispatcher.Invoke(() => text = ComboBoxCats.Text);
+
+                var items = await PriceHandler.ScrapePricesAsync(Items.Where(item => item.Category == (text != MostraTutto.Name ? text : item.Category)).ToList().AsEnumerable());
+                var result = Items.Except(items).Concat(items);
+
                 MainGridProgressBar.Dispatcher.Invoke(() => MainGridProgressBar.Visibility = Visibility.Hidden);
-                MainDataGrid.Dispatcher.Invoke(() => MainDataGrid.IsEnabled = true);
+                MainDataGrid.Dispatcher.Invoke(() =>
+                {
+                    MainDataGrid.IsEnabled = true;
+                    MainDataGrid.ItemsSource = items;
+                });
+                JsonHandler.WriteItems(result);
             });
 
         }

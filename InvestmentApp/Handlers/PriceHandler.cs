@@ -20,9 +20,9 @@ namespace InvestmentApp.Handlers
         /// </summary>
         /// <param name="items"></param>
         /// <returns></returns>
-        public static async Task ScrapePricesAsync(IEnumerable<Item> items)
+        public static async Task<IEnumerable<Item>> ScrapePricesAsync(IEnumerable<Item> items)
         {
-            await Task.Run(() =>
+            return await Task.Run(() =>
             {
                 HttpClient web = new HttpClient();
                 Uri url = new Uri("https://steamcommunity.com/market/priceoverview/?appid=730&currency=3&market_hash_name=");
@@ -46,7 +46,7 @@ namespace InvestmentApp.Handlers
                     }
                 }
 
-                JsonHandler.WriteItems(items);
+                return items;
             });
         }
 
