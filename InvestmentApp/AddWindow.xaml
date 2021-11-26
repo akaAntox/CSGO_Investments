@@ -30,9 +30,9 @@
         <Label Content="Prezzo" Grid.Row="3" Grid.Column="1" VerticalAlignment="Center"/>
         <TextBox x:Name="TextBoxPrice" TextWrapping="Wrap" MouseDoubleClick="TextBox_MouseDoubleClick" Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="2" VerticalAlignment="Center"/>
         <Label Content="Categoria" Grid.Row="4" Grid.Column="1" VerticalAlignment="Center"/>
-        <ComboBox x:Name="ComboBoxCat" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3" VerticalAlignment="Center" HorizontalAlignment="Left" ItemsSource="{Binding Categories}" DisplayMemberPath="Name" Margin="83,0,0,0" Width="140"/>
+        <ComboBox x:Name="ComboBoxCat" Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="3" VerticalAlignment="Center" HorizontalAlignment="Left" ItemsSource="{Binding Categories}" DisplayMemberPath="Name" Width="130"/>
         <Button x:Name="ButtonAdd" Content="Aggiungi" Click="ButtonAdd_Click" Grid.Row="5" Grid.Column="2" VerticalAlignment="Center" Height="30"/>
-        <Button x:Name="ButtonNewCat" Margin="61,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Right" Height="22" Click="ButtonEditCat_Click" Grid.Column="3" Grid.Row="4">
+        <Button x:Name="ButtonNewCat" VerticalAlignment="Center" HorizontalAlignment="Right" Height="22" Click="ButtonEditCat_Click" Grid.Column="3" Grid.Row="4">
             <Image Source="http://simpleicon.com/wp-content/uploads/pen-2.png"/>
         </Button>
     </Grid>
