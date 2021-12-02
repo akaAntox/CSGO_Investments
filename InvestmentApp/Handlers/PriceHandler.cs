@@ -3,13 +3,11 @@ using InvestmentApp.Models.Http;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using System.Windows.Controls;
 
 namespace InvestmentApp.Handlers
 {
@@ -20,7 +18,7 @@ namespace InvestmentApp.Handlers
         /// </summary>
         /// <param name="items"></param>
         /// <returns></returns>
-        public static async Task<IEnumerable<Item>> ScrapePricesAsync(IEnumerable<Item> items)
+        public static async Task<IEnumerable<Item>> ScrapePricesAsync(IEnumerable<Item> items, ProgressBar progressBar)
         {
             return await Task.Run(() =>
             {
@@ -31,8 +29,15 @@ namespace InvestmentApp.Handlers
                 {
                     try
                     {
+                        progressBar.Dispatcher.Invoke(() =>
+                        {
+                            progressBar.Value++;
+                            progressBar.ToolTip = $"Scraping: {item.Name}";
+                        });
+
                         string? tmpItemName = HttpUtility.UrlEncode(item.Name);
                         string tmpUrl = url + tmpItemName;
+
                         ApiResponse? doc = JsonConvert.DeserializeObject<ApiResponse>(web.GetStringAsync(tmpUrl).GetAwaiter().GetResult());
                         if (doc != null && doc.Success)
                         {

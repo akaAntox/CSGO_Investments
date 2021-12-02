@@ -2,6 +2,7 @@
 using InvestmentApp.Models;
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -16,7 +17,7 @@ namespace InvestmentApp
         private ObservableCollection<Category> Categories;
         private ObservableCollection<Item> Items;
 
-        public AddWindow()
+        public AddWindow(string selectedCat)
         {
             InitializeComponent();
 
@@ -32,6 +33,10 @@ namespace InvestmentApp
             { Items = new(JsonHandler.ReadItems()); }
             catch (Exception)
             { Items = new(); }
+
+            var foundItem = Categories.FirstOrDefault(item => item.Name == selectedCat);
+            if (selectedCat != null && foundItem != null)
+                ComboBoxCat.SelectedItem = foundItem;
 
             ComboBoxCat.ItemsSource = Categories;
         }

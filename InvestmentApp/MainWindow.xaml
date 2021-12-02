@@ -25,27 +25,27 @@
             <DataGrid.Columns>
                 <DataGridTextColumn Width="Auto" Binding="{Binding Name}" Header="Nome"/>
                 <DataGridTextColumn Width="Auto" Binding="{Binding Qty}" Header="Quantità" />
-                <DataGridTemplateColumn Width="Auto" Header="Prezzo" >
+                <DataGridTemplateColumn Width="Auto" Header="Prezzo" SortMemberPath="Price">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <DockPanel>
                                 <TextBlock DockPanel.Dock="Left" Text="€ "/>
-                                <TextBlock DockPanel.Dock="Right" Text="{Binding Price}" TextAlignment="Right"/>
+                                <TextBlock DockPanel.Dock="Right" Text="{Binding Price, StringFormat=N2}" TextAlignment="Right"/>
                             </DockPanel>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTemplateColumn Width="Auto" Header="Prezzo minimo">
+                <DataGridTemplateColumn Width="Auto" Header="Prezzo minimo" SortMemberPath="SellPrice">
                     <DataGridTemplateColumn.CellStyle>
                         <Style TargetType="{x:Type DataGridCell}">
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding IsPositive}" Value="True">
+                                <DataTrigger Binding="{Binding IsPositiveMin}" Value="True">
                                     <Setter Property="Background" Value="LightGreen" />
                                 </DataTrigger>
-                                <DataTrigger Binding="{Binding IsPositive}" Value="False">
+                                <DataTrigger Binding="{Binding IsPositiveMin}" Value="False">
                                     <Setter Property="Background" Value="IndianRed" />
                                 </DataTrigger>
-                                <DataTrigger Binding="{Binding IsPositive}" Value="null">
+                                <DataTrigger Binding="{Binding IsPositiveMin}" Value="null">
                                     <Setter Property="Background" Value="White" />
                                 </DataTrigger>
                             </Style.Triggers>
@@ -55,12 +55,12 @@
                         <DataTemplate>
                             <DockPanel>
                                 <TextBlock DockPanel.Dock="Left" Text="€ "/>
-                                <TextBlock DockPanel.Dock="Right" Text="{Binding SellPrice}" TextAlignment="Right"/>
+                                <TextBlock DockPanel.Dock="Right" Text="{Binding SellPrice, StringFormat=N2}" TextAlignment="Right"/>
                             </DockPanel>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTemplateColumn Width="Auto" Header="Prezzo medio">
+                <DataGridTemplateColumn Width="Auto" Header="Prezzo medio" SortMemberPath="MediumPrice">
                     <DataGridTemplateColumn.CellStyle>
                         <Style TargetType="{x:Type DataGridCell}">
                             <Style.Triggers>
@@ -80,17 +80,43 @@
                         <DataTemplate>
                             <DockPanel>
                                 <TextBlock DockPanel.Dock="Left" Text="€ "/>
-                                <TextBlock DockPanel.Dock="Right" Text="{Binding MediumPrice}" TextAlignment="Right"/>
+                                <TextBlock DockPanel.Dock="Right" Text="{Binding MediumPrice, StringFormat=N2}" TextAlignment="Right"/>
                             </DockPanel>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTemplateColumn Width="Auto" Header="Totale" >
+
+                <DataGridTemplateColumn Width="Auto" Header="Guadagno netto" SortMemberPath="NetProfit">
+                    <DataGridTemplateColumn.CellStyle>
+                        <Style TargetType="{x:Type DataGridCell}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsPositiveNet}" Value="True">
+                                    <Setter Property="Background" Value="LightGreen" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsPositiveNet}" Value="False">
+                                    <Setter Property="Background" Value="IndianRed" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsPositiveNet}" Value="null">
+                                    <Setter Property="Background" Value="White" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </DataGridTemplateColumn.CellStyle>
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <DockPanel>
                                 <TextBlock DockPanel.Dock="Left" Text="€ "/>
-                                <TextBlock DockPanel.Dock="Right" Text="{Binding Total}" TextAlignment="Right"/>
+                                <TextBlock DockPanel.Dock="Right" Text="{Binding NetProfit, StringFormat=N2}" TextAlignment="Right"/>
+                            </DockPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Width="Auto" Header="Totale speso" SortMemberPath="Total">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <DockPanel>
+                                <TextBlock DockPanel.Dock="Left" Text="€ "/>
+                                <TextBlock DockPanel.Dock="Right" Text="{Binding Total, StringFormat=N2}" TextAlignment="Right"/>
                             </DockPanel>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
@@ -106,6 +132,6 @@
             <Image Source="http://simpleicon.com/wp-content/uploads/pen-2.png"/>
         </Button>
         <ComboBox x:Name="ComboBoxCats" Text="Mostra tutto" SelectionChanged="ComboBoxCats_SelectionChanged" Margin="10,10,64,0" VerticalAlignment="Top" ItemsSource="{Binding Categories}" DisplayMemberPath="Name"/>
-        <ProgressBar x:Name="MainGridProgressBar" Margin="130,238,130,238" IsIndeterminate="True" Visibility="Hidden" />
+        <ProgressBar x:Name="MainGridProgressBar" Margin="130,238,130,238" Visibility="Hidden" />
     </Grid>
 </Window>

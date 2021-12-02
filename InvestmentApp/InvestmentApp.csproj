@@ -9,6 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="AddWindow.xaml.cs~RF59cf0e53.TMP" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="Icons\investment.ico" />
   </ItemGroup>
 

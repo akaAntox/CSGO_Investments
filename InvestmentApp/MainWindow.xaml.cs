@@ -1,5 +1,4 @@
-﻿using InvestmentApp.Converters;
-using InvestmentApp.Handlers;
+﻿using InvestmentApp.Handlers;
 using InvestmentApp.Models;
 using System;
 using System.Collections.Generic;
@@ -41,7 +40,7 @@ namespace InvestmentApp
             Categories.Insert(0, MostraTutto);
             ComboBoxCats.SelectedIndex = 0;
 
-            MainDataGrid.ItemsSource = Items;
+            GridGUIUpdate();
         }
 
         private void Categories_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -60,7 +59,7 @@ namespace InvestmentApp
             if (row != null)
             {
                 Items.Remove(row);
-                MainDataGrid.ItemsSource = Items;
+                GridGUIUpdate();
                 JsonHandler.WriteItems(Items);
             }
         }
@@ -72,7 +71,7 @@ namespace InvestmentApp
         /// <param name="e"></param>
         private async void ButtonAddItem_Click(object sender, RoutedEventArgs e)
         {
-            AddWindow addWindow = new();
+            AddWindow addWindow = new(ComboBoxCats.Text);
             addWindow.Owner = this;
 
             if (addWindow.ShowDialog() == true && addWindow.Item != null)
@@ -93,7 +92,7 @@ namespace InvestmentApp
                 }
 
                 JsonHandler.WriteItems(Items);
-                MainDataGrid.ItemsSource = Items;
+                GridGUIUpdate();
             }
         }
 
@@ -118,6 +117,18 @@ namespace InvestmentApp
         /// <param name="e"></param>
         private void ComboBoxCats_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            GridGUIUpdate();
+        }
+
+
+        private void ButtonReload_Click(object sender, RoutedEventArgs e)
+        {
+            GridGUIUpdate();
+            Scraping();
+        }
+
+        private void GridGUIUpdate()
+        {
             Category selectedCategory = (Category)ComboBoxCats.SelectedItem;
             if (selectedCategory != null)
             {
@@ -128,30 +139,35 @@ namespace InvestmentApp
             }
         }
 
-        private void ButtonReload_Click(object sender, RoutedEventArgs e)
-        {
-            MainDataGrid.ItemsSource = Items;
-            Scraping();
-        }
-
         private async void Scraping()
         {
             await Task.Run(async () =>
             {
-                MainGridProgressBar.Dispatcher.Invoke(() => MainGridProgressBar.Visibility = Visibility.Visible);
-                MainDataGrid.Dispatcher.Invoke(() => MainDataGrid.IsEnabled = false);
+                MainGridProgressBar.Dispatcher.Invoke(() =>
+                {
+                    MainGridProgressBar.Visibility = Visibility.Visible;
+                    if (ComboBoxCats.SelectedItem != MostraTutto)
+                        MainGridProgressBar.Maximum = Items.Count(item => item.Category == ComboBoxCats.Text);
+                    else
+                        MainGridProgressBar.Maximum = Items.Count();
+                });
+                MainDataGrid.Dispatcher.Invoke(() =>
+                {
+                    GridGUIUpdate();
+                    MainDataGrid.IsEnabled = false;
+                });
 
                 string text = string.Empty;
                 ComboBoxCats.Dispatcher.Invoke(() => text = ComboBoxCats.Text);
 
-                var items = await PriceHandler.ScrapePricesAsync(Items.Where(item => item.Category == (text != MostraTutto.Name ? text : item.Category)).ToList().AsEnumerable());
+                var items = await PriceHandler.ScrapePricesAsync(Items.Where(item => item.Category == (text != MostraTutto.Name ? text : item.Category)).ToList().AsEnumerable(), MainGridProgressBar);
                 var result = Items.Except(items).Concat(items);
 
                 MainGridProgressBar.Dispatcher.Invoke(() => MainGridProgressBar.Visibility = Visibility.Hidden);
                 MainDataGrid.Dispatcher.Invoke(() =>
                 {
                     MainDataGrid.IsEnabled = true;
-                    MainDataGrid.ItemsSource = items;
+                    GridGUIUpdate();
                 });
                 JsonHandler.WriteItems(result);
             });
