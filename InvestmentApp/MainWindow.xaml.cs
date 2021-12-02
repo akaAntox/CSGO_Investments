@@ -171,7 +171,7 @@ namespace InvestmentApp
                 });
                 JsonHandler.WriteItems(result);
             });
-
+            MainGridProgressBar.Value = 0;
         }
     }
 }

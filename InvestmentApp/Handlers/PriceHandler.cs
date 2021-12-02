@@ -22,8 +22,8 @@ namespace InvestmentApp.Handlers
         {
             return await Task.Run(() =>
             {
-                HttpClient web = new HttpClient();
-                Uri url = new Uri("https://steamcommunity.com/market/priceoverview/?appid=730&currency=3&market_hash_name=");
+                HttpClient web = new();
+                Uri url = new("https://steamcommunity.com/market/priceoverview/?appid=730&currency=3&market_hash_name=");
 
                 foreach (Item item in items)
                 {
@@ -48,6 +48,7 @@ namespace InvestmentApp.Handlers
                     catch (HttpRequestException requestException)
                     {
                         Debug.WriteLine($"{requestException.StatusCode}: {requestException.Message}");
+                        Debug.WriteLine($"{requestException.StatusCode} on item \"{item.Name}\" <- {requestException.Source}");
                     }
                 }
 
@@ -64,12 +65,12 @@ namespace InvestmentApp.Handlers
         {
             await Task.Run(() =>
             {
-                HttpClient web = new HttpClient();
-                Uri url = new Uri("https://steamcommunity.com/market/priceoverview/?appid=730&currency=3&market_hash_name=");
+                HttpClient web = new();
+                Uri url = new("https://steamcommunity.com/market/priceoverview/?appid=730&currency=3&market_hash_name=");
 
                 try
                 {
-                    string? tmpItemName = HttpUtility.UrlEncode(item.Name);
+                    string? tmpItemName = HttpUtility.UrlEncode(item?.Name);
                     string tmpUrl = url + tmpItemName;
                     ApiResponse? doc = JsonConvert.DeserializeObject<ApiResponse>(web.GetStringAsync(tmpUrl).GetAwaiter().GetResult());
                     if (doc != null && doc.Success)
