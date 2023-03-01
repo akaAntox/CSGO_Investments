@@ -9,6 +9,7 @@
         public decimal MediumPrice { get; set; }
         public string? Category { get; set; }
         public decimal NetProfit => SellPrice - (Price * 1.2M);
+        public decimal NetTotalProfit => NetProfit * Qty;
         public decimal Total => Price * Qty;
 
         public bool? IsPositiveMin
@@ -44,6 +45,18 @@
                 if (NetProfit > 0)
                     return true;
                 else if (NetProfit < 0)
+                    return false;
+                else
+                    return null;
+            }
+        }
+        public bool? IsPositiveTotalNet
+        {
+            get
+            {
+                if (NetTotalProfit > 0)
+                    return true;
+                else if (NetTotalProfit < 0)
                     return false;
                 else
                     return null;

@@ -5,17 +5,18 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:InvestmentApp"
         mc:Ignorable="d"
-        Title="Investimenti" Width="960" Height="540">
+        Title="Investimenti" Width="1064" Height="800">
     <Grid>
-        <DataGrid x:Name="MainDataGrid" Margin="10,37,10,10" AutoGenerateColumns="False" IsReadOnly="True">
+        <DataGrid x:Name="MainDataGrid" Margin="10,37,10,57" AutoGenerateColumns="False" IsReadOnly="True">
             <DataGrid.Resources>
-                <Style x:Key="DeleteItemContextMenuStyle" TargetType="MenuItem">
-                    <EventSetter Event="Click" Handler="MenuItem_Click"/>
+                <Style x:Key="DeleteItemContextMenuStyle" TargetType="{x:Type MenuItem}">
+                    <EventSetter Event="MenuItem.Click" Handler="MenuItem_Click"/>
                 </Style>
-                <Style TargetType="DataGridRow">
+                <Style TargetType="{x:Type DataGridRow}">
                     <Setter Property="ContextMenu">
                         <Setter.Value>
                             <ContextMenu>
+                                <MenuItem Header="Modifica" Style="{StaticResource DeleteItemContextMenuStyle}"/>
                                 <MenuItem Header="Rimuovi" Style="{StaticResource DeleteItemContextMenuStyle}"/>
                             </ContextMenu>
                         </Setter.Value>
@@ -31,6 +32,16 @@
                             <DockPanel>
                                 <TextBlock DockPanel.Dock="Left" Text="€ "/>
                                 <TextBlock DockPanel.Dock="Right" Text="{Binding Price, StringFormat=N2}" TextAlignment="Right"/>
+                            </DockPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Width="Auto" Header="Totale speso" SortMemberPath="Total">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <DockPanel>
+                                <TextBlock DockPanel.Dock="Left" Text="€ "/>
+                                <TextBlock DockPanel.Dock="Right" Text="{Binding Total, StringFormat=N2}" TextAlignment="Right"/>
                             </DockPanel>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
@@ -111,12 +122,28 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTemplateColumn Width="Auto" Header="Totale speso" SortMemberPath="Total">
+
+                <DataGridTemplateColumn Width="Auto" Header="Totale netto" SortMemberPath="NetTotalProfit">
+                    <DataGridTemplateColumn.CellStyle>
+                        <Style TargetType="{x:Type DataGridCell}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsPositiveTotalNet}" Value="True">
+                                    <Setter Property="Background" Value="LightGreen" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsPositiveTotalNet}" Value="False">
+                                    <Setter Property="Background" Value="IndianRed" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsPositiveTotalNet}" Value="null">
+                                    <Setter Property="Background" Value="White" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </DataGridTemplateColumn.CellStyle>
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <DockPanel>
                                 <TextBlock DockPanel.Dock="Left" Text="€ "/>
-                                <TextBlock DockPanel.Dock="Right" Text="{Binding Total, StringFormat=N2}" TextAlignment="Right"/>
+                                <TextBlock DockPanel.Dock="Right" Text="{Binding NetTotalProfit, StringFormat=N2}" TextAlignment="Right"/>
                             </DockPanel>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
@@ -132,6 +159,14 @@
             <Image Source="http://simpleicon.com/wp-content/uploads/pen-2.png"/>
         </Button>
         <ComboBox x:Name="ComboBoxCats" Text="Mostra tutto" SelectionChanged="ComboBoxCats_SelectionChanged" Margin="10,10,64,0" VerticalAlignment="Top" ItemsSource="{Binding Categories}" DisplayMemberPath="Name"/>
-        <ProgressBar x:Name="MainGridProgressBar" Margin="130,238,130,238" Visibility="Hidden" />
+        <ProgressBar x:Name="MainGridProgressBar" Margin="10,580,10,20" VerticalAlignment="Bottom" Height="5"/>
+        <Label x:Name="LabelQty" Content="Quantity: xxxx" HorizontalAlignment="Left" Height="25" Margin="10,0,0,29" VerticalAlignment="Bottom" Width="103"/>
+        <Label x:Name="LabelPrice" Content="Buy Price: xxxx,xx" Height="25" Margin="112,0,0,29" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="121"/>
+        <Label x:Name="LabelTotal" Content="Total Payed: xxxx,xx" Height="25" Margin="238,0,0,29" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="126"/>
+        <Label x:Name="LabelSellPrice" Content="Minimum Price: xxxx,xx" Height="25" Margin="369,0,0,29" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="147"/>
+        <Label x:Name="LabelMediumPrice" Content="Medium Price: xxxx,xx" Height="25" Margin="521,0,0,29" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="149"/>
+        <Label x:Name="LabelNetProfit" Content="Net Profit: xxxx,xx" HorizontalAlignment="Right" Height="25" Margin="0,0,167,29" VerticalAlignment="Bottom" Width="118" RenderTransformOrigin="0.496,0.52"/>
+        <Label x:Name="LabelNetTotalProfit" Content="Total Net Profit: xxxx,xx" Height="25" Margin="0,0,10,29" VerticalAlignment="Bottom" HorizontalContentAlignment="Right" HorizontalAlignment="Right" Width="152"/>
+        <Label x:Name="LabelInfo" Content="No operation" HorizontalAlignment="Right" VerticalAlignment="Bottom" HorizontalContentAlignment="Right" Margin="0,0,10,0" Height="25"/>
     </Grid>
 </Window>

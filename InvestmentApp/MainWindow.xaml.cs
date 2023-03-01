@@ -43,6 +43,25 @@ namespace InvestmentApp
             GridGUIUpdate();
         }
 
+        private void ReloadTotalValues (IEnumerable<Item> items)
+        {
+            decimal sumQty = Decimal.Round(items.Sum(i => i.Qty),2);
+            decimal sumPrice = Decimal.Round(items.Sum(i => i.Price), 2);
+            decimal sumTotal = Decimal.Round(items.Sum(i => i.Total), 2);
+            decimal sumSellPrice = Decimal.Round(items.Sum(i => i.SellPrice), 2);
+            decimal sumMediumPrice = Decimal.Round(items.Sum(i => i.MediumPrice), 2);
+            decimal sumNetProfit = Decimal.Round(items.Sum(i => i.NetProfit), 2);
+            decimal sumNetTotalProfit = Decimal.Round(items.Sum(i => i.NetTotalProfit), 2);
+                
+            LabelQty.Content = "Quantity: " + sumQty.ToString();
+            LabelPrice.Content = "Buy Price: " + sumPrice.ToString();
+            LabelTotal.Content = "Total Payed: " + sumTotal.ToString();
+            LabelSellPrice.Content = "Minimum Price: " + sumSellPrice.ToString();
+            LabelMediumPrice.Content = "Medium Price: " + sumMediumPrice.ToString();
+            LabelNetProfit.Content = "Net Profit: " + sumNetProfit.ToString();
+            LabelNetTotalProfit.Content = "Total Net Profit: " + sumNetTotalProfit.ToString();
+        }
+
         private void Categories_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             ComboBoxCats.ItemsSource = Categories;
@@ -51,8 +70,6 @@ namespace InvestmentApp
         /// <summary>
         /// Elimina elemento dalla datagridview (contextmenu)
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void MenuItem_Click(object sender, RoutedEventArgs e)
         {
             Item row = (Item)MainDataGrid.SelectedItem;
@@ -67,8 +84,6 @@ namespace InvestmentApp
         /// <summary>
         /// Aggiunge l'oggetto alla lista e ne aggiorna i prezzi in base a steam
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private async void ButtonAddItem_Click(object sender, RoutedEventArgs e)
         {
             AddWindow addWindow = new(ComboBoxCats.Text);
@@ -113,8 +128,6 @@ namespace InvestmentApp
         /// Quando selezioni nuovo elemento combobox, cambia la visualizzazione 
         /// nella gridview in base alla categoria selezionata
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void ComboBoxCats_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             GridGUIUpdate();
@@ -133,10 +146,18 @@ namespace InvestmentApp
             if (selectedCategory != null)
             {
                 if (selectedCategory != MostraTutto)
-                    MainDataGrid.ItemsSource = Items.Where(item => item.Category == selectedCategory.Name);
+                {
+                    var selected = Items.Where(item => item.Category == selectedCategory.Name);
+                    MainDataGrid.ItemsSource = selected;
+                    ReloadTotalValues(selected);
+                }
                 else
+                {
                     MainDataGrid.ItemsSource = Items;
+                    ReloadTotalValues(Items);
+                }
             }
+            
         }
 
         private async void Scraping()
@@ -146,6 +167,7 @@ namespace InvestmentApp
                 MainGridProgressBar.Dispatcher.Invoke(() =>
                 {
                     MainGridProgressBar.Visibility = Visibility.Visible;
+                    MainGridProgressBar.Value = 0;
                     if (ComboBoxCats.SelectedItem != MostraTutto)
                         MainGridProgressBar.Maximum = Items.Count(item => item.Category == ComboBoxCats.Text);
                     else
@@ -154,24 +176,21 @@ namespace InvestmentApp
                 MainDataGrid.Dispatcher.Invoke(() =>
                 {
                     GridGUIUpdate();
-                    MainDataGrid.IsEnabled = false;
                 });
 
                 string text = string.Empty;
                 ComboBoxCats.Dispatcher.Invoke(() => text = ComboBoxCats.Text);
 
-                var items = await PriceHandler.ScrapePricesAsync(Items.Where(item => item.Category == (text != MostraTutto.Name ? text : item.Category)).ToList().AsEnumerable(), MainGridProgressBar);
+                var items = await PriceHandler.ScrapePricesAsync(Items.Where(item => item.Category == (text != MostraTutto.Name ? text : item.Category)).ToList().AsEnumerable(), MainGridProgressBar, LabelInfo);
                 var result = Items.Except(items).Concat(items);
 
-                MainGridProgressBar.Dispatcher.Invoke(() => MainGridProgressBar.Visibility = Visibility.Hidden);
                 MainDataGrid.Dispatcher.Invoke(() =>
                 {
-                    MainDataGrid.IsEnabled = true;
+                    MainDataGrid.ToolTip = null;
                     GridGUIUpdate();
                 });
                 JsonHandler.WriteItems(result);
             });
-            MainGridProgressBar.Value = 0;
         }
     }
 }
