@@ -15,7 +15,7 @@ namespace InvestmentApp
     /// </summary>
     public partial class MainWindow : Window
     {
-        private ObservableCollection<Item> Items;
+        private readonly ObservableCollection<Item> Items;
         private ObservableCollection<Category> Categories;
         private readonly Category MostraTutto = new() { Name = "Mostra tutto" };
 
@@ -70,7 +70,7 @@ namespace InvestmentApp
         /// <summary>
         /// Elimina elemento dalla datagridview (contextmenu)
         /// </summary>
-        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        private void DeleteItem_Click(object sender, RoutedEventArgs e)
         {
             Item row = (Item)MainDataGrid.SelectedItem;
             if (row != null)
@@ -97,7 +97,7 @@ namespace InvestmentApp
 
                 if (queryItems.Any())
                 {
-                    int index = Items.IndexOf(queryItems.FirstOrDefault());
+                    int index = Items.IndexOf(queryItems.First());
                     Items[index].Qty += addWindow.Item.Qty;
                 }
                 else
