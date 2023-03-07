@@ -92,9 +92,12 @@ namespace InvestmentApp
         /// </summary>
         private void UpdateItem_Click(object sender, RoutedEventArgs e)
         {
-            Item row = (Item)MainDataGrid.SelectedItem;
-            if (row != null)
-                Scraping(row);
+            if (MainDataGrid.SelectedItems.Count > 0)
+            {
+                var items = MainDataGrid.SelectedItems.Cast<Item>().ToList();
+                foreach (var item in items)
+                    Scraping(item);
+            }
         }
 
         /// <summary>
