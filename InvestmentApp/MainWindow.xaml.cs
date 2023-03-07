@@ -191,11 +191,6 @@ namespace InvestmentApp
                     ReloadTotalValues(Items);
                 }
             }
-            else
-            {
-                MainDataGrid.ItemsSource = Items;
-                ReloadTotalValues(Items);
-            }            
         }
 
         /// <summary>
