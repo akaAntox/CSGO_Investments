@@ -9,14 +9,21 @@
     <Grid>
         <DataGrid x:Name="MainDataGrid" Margin="10,37,10,57" AutoGenerateColumns="False" IsReadOnly="True">
             <DataGrid.Resources>
+                <Style x:Key="UpdateItemContextMenuStyle" TargetType="{x:Type MenuItem}">
+                    <EventSetter Event="MenuItem.Click" Handler="UpdateItem_Click"/>
+                </Style>
+                <Style x:Key="EditItemContextMenuStyle" TargetType="{x:Type MenuItem}">
+                    <EventSetter Event="MenuItem.Click" Handler="EditItem_Click"/>
+                </Style>
                 <Style x:Key="DeleteItemContextMenuStyle" TargetType="{x:Type MenuItem}">
-                    <EventSetter Event="MenuItem.Click" Handler="MenuItem_Click"/>
+                    <EventSetter Event="MenuItem.Click" Handler="DeleteItem_Click"/>
                 </Style>
                 <Style TargetType="{x:Type DataGridRow}">
                     <Setter Property="ContextMenu">
                         <Setter.Value>
                             <ContextMenu>
-                                <MenuItem Header="Modifica" Style="{StaticResource DeleteItemContextMenuStyle}"/>
+                                <MenuItem Header="Aggiorna" Style="{StaticResource UpdateItemContextMenuStyle}"/>
+                                <MenuItem Header="Modifica" Style="{StaticResource EditItemContextMenuStyle}"/>
                                 <MenuItem Header="Rimuovi" Style="{StaticResource DeleteItemContextMenuStyle}"/>
                             </ContextMenu>
                         </Setter.Value>
@@ -148,6 +155,33 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
+
+                <DataGridTemplateColumn Width="Auto" Header="Percentuale" SortMemberPath="ProfitPercentage">
+                    <DataGridTemplateColumn.CellStyle>
+                        <Style TargetType="{x:Type DataGridCell}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsPositivePercentage}" Value="True">
+                                    <Setter Property="Background" Value="LightGreen" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsPositivePercentage}" Value="False">
+                                    <Setter Property="Background" Value="IndianRed" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsPositivePercentage}" Value="null">
+                                    <Setter Property="Background" Value="White" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </DataGridTemplateColumn.CellStyle>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <DockPanel>
+                                <TextBlock DockPanel.Dock="Left" Text="% "/>
+                                <TextBlock DockPanel.Dock="Right" Text="{Binding ProfitPercentage, StringFormat=N2}" TextAlignment="Right"/>
+                            </DockPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                
                 <DataGridTextColumn Width="Auto" Binding="{Binding Category}" Header="Categoria" />
             </DataGrid.Columns>
         </DataGrid>

@@ -83,7 +83,7 @@ namespace InvestmentApp.Handlers
         /// <summary>
         /// Aggiorna prezzo medio e minimo dell'oggetto item in base al mercato di steam
         /// </summary>
-        public static async Task ScrapePriceAsync(Item? item)
+        public static async Task ScrapePriceAsync(Item item)
         {
             await Task.Run(() =>
             {
