@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
@@ -14,6 +15,8 @@ namespace InvestmentApp.Handlers
 {
     internal static class PriceHandler
     {
+        private const string PricesLink = "https://steamcommunity.com/market/priceoverview/?appid=730&currency=3&market_hash_name=";
+
         /// <summary>
         /// Aggiorna prezzo medio e minimo degli items in base al mercato di steam
         /// </summary>
@@ -22,7 +25,7 @@ namespace InvestmentApp.Handlers
             return await Task.Run(() =>
             {
                 HttpClient web = new();
-                Uri url = new("https://steamcommunity.com/market/priceoverview/?appid=730&currency=3&market_hash_name=");
+                Uri url = new(PricesLink);
                 bool exception = false;
 
                 foreach (Item item in items)
@@ -88,20 +91,23 @@ namespace InvestmentApp.Handlers
             await Task.Run(() =>
             {
                 HttpClient web = new();
-                Uri url = new("https://steamcommunity.com/market/priceoverview/?appid=730&currency=3&market_hash_name=");
+                Uri url = new(PricesLink);
 
                 try
                 {
                     string? tmpItemName = HttpUtility.UrlEncode(item?.Name);
                     string tmpUrl = url + tmpItemName;
                     ApiResponse? doc = JsonConvert.DeserializeObject<ApiResponse>(web.GetStringAsync(tmpUrl).GetAwaiter().GetResult());
-                    if (doc != null && doc.Success)
+                    if (doc != null && doc.Success && item != null)
                     {
                         item.SellPrice = doc.LowestPrice;
                         item.MediumPrice = doc.MedianPrice;
                     }
                 }
-                catch (Exception) { }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error scraping item: {ex.Message}");
+                }
             });
         }
     }

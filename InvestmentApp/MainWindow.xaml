@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="Investimenti" Width="1064" Height="800">
     <Grid>
-        <DataGrid x:Name="MainDataGrid" Margin="10,37,10,57" AutoGenerateColumns="False" IsReadOnly="True">
+        <DataGrid x:Name="MainDataGrid" Margin="10,37,10,64" AutoGenerateColumns="False" IsReadOnly="True">
             <DataGrid.Resources>
                 <Style x:Key="UpdateItemContextMenuStyle" TargetType="{x:Type MenuItem}">
                     <EventSetter Event="MenuItem.Click" Handler="UpdateItem_Click"/>
@@ -181,7 +181,7 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                
+
                 <DataGridTextColumn Width="Auto" Binding="{Binding Category}" Header="Categoria" />
             </DataGrid.Columns>
         </DataGrid>
@@ -193,14 +193,10 @@
             <Image Source="http://simpleicon.com/wp-content/uploads/pen-2.png"/>
         </Button>
         <ComboBox x:Name="ComboBoxCats" Text="Mostra tutto" SelectionChanged="ComboBoxCats_SelectionChanged" Margin="10,10,64,0" VerticalAlignment="Top" ItemsSource="{Binding Categories}" DisplayMemberPath="Name"/>
-        <ProgressBar x:Name="MainGridProgressBar" Margin="10,580,10,20" VerticalAlignment="Bottom" Height="5"/>
-        <Label x:Name="LabelQty" Content="Quantity: xxxx" HorizontalAlignment="Left" Height="25" Margin="10,0,0,29" VerticalAlignment="Bottom" Width="103"/>
-        <Label x:Name="LabelPrice" Content="Buy Price: xxxx,xx" Height="25" Margin="112,0,0,29" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="121"/>
-        <Label x:Name="LabelTotal" Content="Total Payed: xxxx,xx" Height="25" Margin="238,0,0,29" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="126"/>
-        <Label x:Name="LabelSellPrice" Content="Minimum Price: xxxx,xx" Height="25" Margin="369,0,0,29" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="147"/>
-        <Label x:Name="LabelMediumPrice" Content="Medium Price: xxxx,xx" Height="25" Margin="521,0,0,29" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="149"/>
-        <Label x:Name="LabelNetProfit" Content="Net Profit: xxxx,xx" HorizontalAlignment="Right" Height="25" Margin="0,0,167,29" VerticalAlignment="Bottom" Width="118" RenderTransformOrigin="0.496,0.52"/>
-        <Label x:Name="LabelNetTotalProfit" Content="Total Net Profit: xxxx,xx" Height="25" Margin="0,0,10,29" VerticalAlignment="Bottom" HorizontalContentAlignment="Right" HorizontalAlignment="Right" Width="152"/>
-        <Label x:Name="LabelInfo" Content="No operation" HorizontalAlignment="Right" VerticalAlignment="Bottom" HorizontalContentAlignment="Right" Margin="0,0,10,0" Height="25"/>
+        <ProgressBar x:Name="MainGridProgressBar" Margin="10,0,10,27" Height="5" VerticalAlignment="Bottom"/>
+        <Label x:Name="LabelQty" Content="Quantity: xxxx" HorizontalAlignment="Left" Height="25" Margin="10,0,0,36" VerticalAlignment="Bottom" Width="103"/>
+        <Label x:Name="LabelTotal" Content="Total Payed: xxxx,xx" Height="25" Margin="118,0,0,36" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="159"/>
+        <Label x:Name="LabelNetTotalProfit" Content="Total Net Profit: xxxx,xx" Height="25" Margin="0,0,10,36" VerticalAlignment="Bottom" HorizontalContentAlignment="Right" HorizontalAlignment="Right" Width="189"/>
+        <Label x:Name="LabelInfo" Content="No operation" HorizontalAlignment="Right" VerticalAlignment="Bottom" HorizontalContentAlignment="Right" Margin="0,0,10,0" Height="27"/>
     </Grid>
 </Window>

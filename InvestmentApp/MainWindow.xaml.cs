@@ -25,20 +25,28 @@ namespace InvestmentApp
 
             try
             {
-                Categories = new(JsonHandler.ReadCategory());
+                Categories = new(JsonHandler.ReadCategory() ?? new List<Category>());
                 Categories.CollectionChanged += Categories_CollectionChanged;
             }
-            catch (Exception)
-            { Categories = new(); }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error reading categories from file: {ex.Message}");
+                Categories = new ObservableCollection<Category>();
+            }
 
             try
-            { Items = new(JsonHandler.ReadItems()); }
-            catch (Exception)
-            { Items = new(); }
+            { 
+                Items = new(JsonHandler.ReadItems() ?? new List<Item>()); 
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error reading items from file: {ex.Message}");
+                Items = new ObservableCollection<Item>();
+            }
 
             ComboBoxCats.ItemsSource = Categories;
             Categories.Insert(0, MostraTutto);
-            ComboBoxCats.SelectedIndex = 0;
+            ComboBoxCats.SelectedItem = MostraTutto;
 
             GridGUIUpdate();
         }
@@ -46,23 +54,15 @@ namespace InvestmentApp
         /// <summary>
         /// Calcola i valori totali da mostrare in fondo
         /// </summary>
-        private void ReloadTotalValues (IEnumerable<Item> items)
+        private void ReloadTotalValues(IEnumerable<Item> items)
         {
-            decimal sumQty = decimal.Round(items.Sum(i => i.Qty),2);
-            decimal sumPrice = decimal.Round(items.Sum(i => i.Price), 2);
+            decimal sumQty = decimal.Round(items.Sum(i => i.Qty), 2);
             decimal sumTotal = decimal.Round(items.Sum(i => i.Total), 2);
-            decimal sumSellPrice = decimal.Round(items.Sum(i => i.SellPrice), 2);
-            decimal sumMediumPrice = decimal.Round(items.Sum(i => i.MediumPrice), 2);
-            decimal sumNetProfit = decimal.Round(items.Sum(i => i.NetProfit), 2);
             decimal sumNetTotalProfit = decimal.Round(items.Sum(i => i.NetTotalProfit), 2);
-            
+
             LabelQty.Content = "Quantity: " + sumQty.ToString();
-            LabelPrice.Content = "Buy Price: " + sumPrice.ToString();
-            LabelTotal.Content = "Total Payed: " + sumTotal.ToString();
-            LabelSellPrice.Content = "Minimum Price: " + sumSellPrice.ToString();
-            LabelMediumPrice.Content = "Medium Price: " + sumMediumPrice.ToString();
-            LabelNetProfit.Content = "Net Profit: " + sumNetProfit.ToString();
-            LabelNetTotalProfit.Content = "Total Net Profit: " + sumNetTotalProfit.ToString();
+            LabelTotal.Content = "Total Payed: " + sumTotal.ToString() + " €";
+            LabelNetTotalProfit.Content = "Total Net Profit: " + sumNetTotalProfit.ToString() + " €";
         }
 
         /// <summary>
@@ -78,11 +78,18 @@ namespace InvestmentApp
         /// </summary>
         private void DeleteItem_Click(object sender, RoutedEventArgs e)
         {
-            Item row = (Item)MainDataGrid.SelectedItem;
-            if (row != null)
+            var selectedItems = MainDataGrid.SelectedItems;
+            if (selectedItems != null && selectedItems.Count > 0)
             {
-                Items.Remove(row);
-                GridGUIUpdate();
+                for (int i = selectedItems.Count - 1; i >= 0; i--)
+                {
+                    var selectedItem = selectedItems[i] as Item;
+                    if (selectedItem != null)
+                    {
+                        Items.Remove(selectedItem);
+                    }
+                }
+                MainDataGrid.Dispatcher.Invoke(() => GridGUIUpdate());
                 JsonHandler.WriteItems(Items);
             }
         }
@@ -92,9 +99,16 @@ namespace InvestmentApp
         /// </summary>
         private void UpdateItem_Click(object sender, RoutedEventArgs e)
         {
-            Item row = (Item)MainDataGrid.SelectedItem;
-            if (row != null)
-                Scraping(row);
+            var selectedItems = MainDataGrid.SelectedItems;
+            if (selectedItems != null && selectedItems.Count > 0)
+            {
+                foreach (var selectedItem in selectedItems)
+                {
+                    var row = selectedItem as Item;
+                    if (row != null)
+                        Scraping(row);
+                }
+            }
         }
 
         /// <summary>
@@ -102,9 +116,7 @@ namespace InvestmentApp
         /// </summary>
         private void EditItem_Click(object sender, RoutedEventArgs e)
         {
-            //Item row = (Item)MainDataGrid.SelectedItem;
-            //if (row != null)
-            //    Scraping(row);
+            // TODO: IMPLEMENTATION
         }
 
         /// <summary>
@@ -133,7 +145,7 @@ namespace InvestmentApp
                 }
 
                 JsonHandler.WriteItems(Items);
-                GridGUIUpdate();
+                MainDataGrid.Dispatcher.Invoke(() => GridGUIUpdate());
             }
         }
 
@@ -146,7 +158,7 @@ namespace InvestmentApp
             newEditWindow.Owner = this;
             newEditWindow.ShowDialog();
 
-            Categories = new(JsonHandler.ReadCategory());
+            Categories = new(JsonHandler.ReadCategory() ?? new List<Category>());
 
             ComboBoxCats.ItemsSource = Categories;
             Categories.Insert(0, MostraTutto);
@@ -159,7 +171,7 @@ namespace InvestmentApp
         /// </summary>
         private void ComboBoxCats_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            GridGUIUpdate();
+            MainDataGrid.Dispatcher.Invoke(() => GridGUIUpdate());
         }
 
         /// <summary>
@@ -218,16 +230,12 @@ namespace InvestmentApp
                                                                     selectedItem.Name == item.Name :
                                                                     item.Category == (text != MostraTutto.Name ? text : item.Category))
                                                                 .ToList().AsEnumerable(), MainGridProgressBar, LabelInfo);
-                var result = Items.Except(items).Concat(items);
 
+                var result = Items.Except(items).Concat(items); // remove items and add them at the end
                 JsonHandler.WriteItems(result);
-                MainDataGrid.Dispatcher.Invoke(() =>
-                {
-                    MainDataGrid.ToolTip = null;
-                    GridGUIUpdate();
-                });
+                MainDataGrid.Dispatcher.Invoke(() => GridGUIUpdate());
             });
-            GridGUIUpdate();
+            MainDataGrid.Dispatcher.Invoke(() => GridGUIUpdate());
         }
 
         //private async void Scraping(Item? selectedItem = null)
