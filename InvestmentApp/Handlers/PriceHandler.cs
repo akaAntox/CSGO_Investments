@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using System.Windows;
@@ -30,6 +31,7 @@ namespace InvestmentApp.Handlers
 
                 foreach (Item item in items)
                 {
+                    if(item.Name != "Berlin 2019 Legends (Holo/Foil)") // not working
                     try
                     {
                         progressBar.Dispatcher.Invoke(() =>
@@ -57,6 +59,7 @@ namespace InvestmentApp.Handlers
 
                         progressBar.Dispatcher.Invoke(() =>
                         {
+                            progressBar.Value++;
                             progressBar.Foreground = Brushes.Red;
                             informationLabel.Foreground = Brushes.Red;
                             progressBar.ToolTip = informationLabel.Content;
@@ -66,6 +69,7 @@ namespace InvestmentApp.Handlers
                         exception = true;
                         break;
                     }
+                    Thread.Sleep(3000); // temp solution to toomanyitemsrequested error
                 }
 
                 if (!exception)

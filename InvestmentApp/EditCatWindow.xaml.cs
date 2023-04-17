@@ -7,9 +7,6 @@ using System.Windows;
 
 namespace InvestmentApp
 {
-    /// <summary>
-    /// Logica di interazione per EditCatWindow.xaml
-    /// </summary>
     public partial class EditCatWindow : Window
     {
         private ObservableCollection<Category> Categories;
@@ -21,18 +18,21 @@ namespace InvestmentApp
 
             try
             {
-                Categories = new(JsonHandler.ReadCategory());
+                Categories = new(JsonHandler.ReadCategoryAsync());
                 Categories.CollectionChanged += Categories_CollectionChanged;
             }
-            catch (Exception)
-            { Categories = new(); }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error loading categories: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                Categories = new ObservableCollection<Category>();
+            }
 
             ListViewCat.ItemsSource = Categories;
         }
 
         private void Categories_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
-            ListViewCat.ItemsSource = Categories;
+            ListViewCat.Dispatcher.Invoke(() => ListViewCat.ItemsSource = Categories);
         }
 
         private void ButtonDelete_Click(object sender, RoutedEventArgs e)
@@ -41,7 +41,7 @@ namespace InvestmentApp
             if (row != null)
             {
                 Categories.Remove(row);
-                JsonHandler.WriteCategory(Categories);
+                JsonHandler.WriteCategoryAsync(Categories);
             }
         }
 
@@ -55,8 +55,8 @@ namespace InvestmentApp
                 Categories.Remove(MostraTutto);
                 var tmpCategories = Categories.OrderBy(i => i.Name);
                 Categories = new(tmpCategories);
-                JsonHandler.WriteCategory(Categories);
-                ListViewCat.ItemsSource = Categories;
+                JsonHandler.WriteCategoryAsync(Categories);
+                ListViewCat.Dispatcher.Invoke(() => ListViewCat.ItemsSource = Categories);
             }
         }
     }

@@ -9,9 +9,6 @@ using System.Windows.Input;
 
 namespace InvestmentApp
 {
-    /// <summary>
-    /// Logica di interazione per AddWindow.xaml
-    /// </summary>
     public partial class AddWindow : Window
     {
         private ObservableCollection<Category> Categories;
@@ -23,14 +20,14 @@ namespace InvestmentApp
 
             try
             {
-                Categories = new(JsonHandler.ReadCategory());
+                Categories = new(JsonHandler.ReadCategoryAsync());
                 Categories.CollectionChanged += Categories_CollectionChanged;
             }
             catch (Exception)
             { Categories = new(); }
 
             try
-            { Items = new(JsonHandler.ReadItems()); }
+            { Items = new(JsonHandler.ReadItemsAsync()); }
             catch (Exception)
             { Items = new(); }
 
@@ -96,7 +93,7 @@ namespace InvestmentApp
             newEditWindow.Owner = this;
             newEditWindow.ShowDialog();
 
-            Categories = new(JsonHandler.ReadCategory());
+            Categories = new(JsonHandler.ReadCategoryAsync());
             ComboBoxCat.ItemsSource = Categories;
         }
     }

@@ -10,10 +10,20 @@ namespace InvestmentApp.Handlers
 {
     public static class JsonHandler
     {
-        public static async void WriteItems(IEnumerable<Item> item, string fileName = @"objects.json")
-            => await File.WriteAllTextAsync(fileName, JsonConvert.SerializeObject(item));
+        public static async void WriteItemsAsync(IEnumerable<Item> items, string fileName = @"objects.json")
+        {
+            try
+            {
+                var json = JsonConvert.SerializeObject(items);
+                await File.WriteAllTextAsync(fileName, json);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error writing items to file: {ex.Message}");
+            }
+        }
 
-        public static IEnumerable<Item>? ReadItems(string fileName = @"objects.json")
+        public static IEnumerable<Item>? ReadItemsAsync(string fileName = @"objects.json")
         {
             try
             {
@@ -27,10 +37,20 @@ namespace InvestmentApp.Handlers
             }
         }
 
-        public static async void WriteCategory(IEnumerable<Category> cat, string fileName = @"categories.json")
-            => await File.WriteAllTextAsync(fileName, JsonConvert.SerializeObject(cat));
+        public static async void WriteCategoryAsync(IEnumerable<Category> categories, string fileName = @"categories.json")
+        {
+            try
+            {
+                var json = JsonConvert.SerializeObject(categories);
+                await File.WriteAllTextAsync(fileName, json);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error writing categories to file: {ex.Message}");
+            }
+        }
 
-        public static IEnumerable<Category>? ReadCategory(string fileName = @"categories.json")
+        public static IEnumerable<Category>? ReadCategoryAsync(string fileName = @"categories.json")
         {
             try
             {

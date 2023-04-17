@@ -10,6 +10,7 @@
         public string? Category { get; set; }
         public decimal NetProfit => SellPrice - (Price * 1.15M);
         public decimal NetTotalProfit => NetProfit * Qty;
+        public decimal LastUpdatedPercentageDifference { get; set; }
         public decimal Total => Price * Qty;
         public decimal ProfitPercentage
         {

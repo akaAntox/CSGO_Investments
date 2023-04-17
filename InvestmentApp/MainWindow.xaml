@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="Investimenti" Width="1064" Height="800">
     <Grid>
-        <DataGrid x:Name="MainDataGrid" Margin="10,37,10,64" AutoGenerateColumns="False" IsReadOnly="True">
+        <DataGrid x:Name="MainDataGrid" Margin="10,37,10,68" AutoGenerateColumns="False" IsReadOnly="True">
             <DataGrid.Resources>
                 <Style x:Key="UpdateItemContextMenuStyle" TargetType="{x:Type MenuItem}">
                     <EventSetter Event="MenuItem.Click" Handler="UpdateItem_Click"/>
@@ -194,9 +194,11 @@
         </Button>
         <ComboBox x:Name="ComboBoxCats" Text="Mostra tutto" SelectionChanged="ComboBoxCats_SelectionChanged" Margin="10,10,64,0" VerticalAlignment="Top" ItemsSource="{Binding Categories}" DisplayMemberPath="Name"/>
         <ProgressBar x:Name="MainGridProgressBar" Margin="10,0,10,27" Height="5" VerticalAlignment="Bottom"/>
-        <Label x:Name="LabelQty" Content="Quantity: xxxx" HorizontalAlignment="Left" Height="25" Margin="10,0,0,36" VerticalAlignment="Bottom" Width="103"/>
-        <Label x:Name="LabelTotal" Content="Total Payed: xxxx,xx" Height="25" Margin="118,0,0,36" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="159"/>
-        <Label x:Name="LabelNetTotalProfit" Content="Total Net Profit: xxxx,xx" Height="25" Margin="0,0,10,36" VerticalAlignment="Bottom" HorizontalContentAlignment="Right" HorizontalAlignment="Right" Width="189"/>
+        <Label x:Name="LabelQty" Content="Quantity: xxxx" HorizontalAlignment="Left" Height="28" Margin="10,0,0,36" VerticalAlignment="Bottom" Width="103"/>
+        <Label x:Name="LabelTotal" Content="Total Payed: xxxx,xx" Height="28" Margin="118,0,0,37" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="159"/>
+        <Label x:Name="LabelNetTotalProfit" Content="Total Net Profit: xxxx,xx" Height="28" Margin="0,0,166,37" VerticalAlignment="Bottom" HorizontalContentAlignment="Right" HorizontalAlignment="Right" Width="170"/>
         <Label x:Name="LabelInfo" Content="No operation" HorizontalAlignment="Right" VerticalAlignment="Bottom" HorizontalContentAlignment="Right" Margin="0,0,10,0" Height="27"/>
+        <Label x:Name="LabelTotalValue" Content="Total Value: xxxx,xx" Height="28" Margin="0,0,10,37" VerticalAlignment="Bottom" HorizontalContentAlignment="Right" HorizontalAlignment="Right" Width="151"/>
+        <Label x:Name="LabelAvgPercentage" Content="Average profit percentage: xx,xx" Height="28" Margin="0,0,344,37" VerticalAlignment="Bottom" HorizontalContentAlignment="Right" HorizontalAlignment="Right" Width="215"/>
     </Grid>
 </Window>

@@ -25,7 +25,7 @@ namespace InvestmentApp
 
             try
             {
-                Categories = new(JsonHandler.ReadCategory() ?? new List<Category>());
+                Categories = new(JsonHandler.ReadCategoryAsync() ?? new List<Category>());
                 Categories.CollectionChanged += Categories_CollectionChanged;
             }
             catch (Exception ex)
@@ -36,7 +36,7 @@ namespace InvestmentApp
 
             try
             { 
-                Items = new(JsonHandler.ReadItems() ?? new List<Item>()); 
+                Items = new(JsonHandler.ReadItemsAsync() ?? new List<Item>()); 
             }
             catch (Exception ex)
             {
@@ -56,13 +56,18 @@ namespace InvestmentApp
         /// </summary>
         private void ReloadTotalValues(IEnumerable<Item> items)
         {
+            int itemCount = items.Count();
             decimal sumQty = decimal.Round(items.Sum(i => i.Qty), 2);
-            decimal sumTotal = decimal.Round(items.Sum(i => i.Total), 2);
+            decimal sumTotalBuy = decimal.Round(items.Sum(i => i.Total), 2);
             decimal sumNetTotalProfit = decimal.Round(items.Sum(i => i.NetTotalProfit), 2);
+            decimal sumTotalValue = decimal.Round(sumTotalBuy + sumNetTotalProfit, 2);
+            decimal avgPercentage = decimal.Round(items.Sum(i => i.ProfitPercentage / itemCount), 2);
 
             LabelQty.Content = "Quantity: " + sumQty.ToString();
-            LabelTotal.Content = "Total Payed: " + sumTotal.ToString() + " €";
+            LabelTotal.Content = "Total Payed: " + sumTotalBuy.ToString() + " €";
+            LabelAvgPercentage.Content = "Average profit percentage: " + avgPercentage.ToString() + " %";
             LabelNetTotalProfit.Content = "Total Net Profit: " + sumNetTotalProfit.ToString() + " €";
+            LabelTotalValue.Content = "Total Value: " + sumTotalValue.ToString() + " €";
         }
 
         /// <summary>
@@ -90,7 +95,7 @@ namespace InvestmentApp
                     }
                 }
                 MainDataGrid.Dispatcher.Invoke(() => GridGUIUpdate());
-                JsonHandler.WriteItems(Items);
+                JsonHandler.WriteItemsAsync(Items);
             }
         }
 
@@ -144,7 +149,7 @@ namespace InvestmentApp
                     Items.Add(addWindow.Item);
                 }
 
-                JsonHandler.WriteItems(Items);
+                JsonHandler.WriteItemsAsync(Items);
                 MainDataGrid.Dispatcher.Invoke(() => GridGUIUpdate());
             }
         }
@@ -158,7 +163,7 @@ namespace InvestmentApp
             newEditWindow.Owner = this;
             newEditWindow.ShowDialog();
 
-            Categories = new(JsonHandler.ReadCategory() ?? new List<Category>());
+            Categories = new(JsonHandler.ReadCategoryAsync() ?? new List<Category>());
 
             ComboBoxCats.ItemsSource = Categories;
             Categories.Insert(0, MostraTutto);
@@ -232,7 +237,7 @@ namespace InvestmentApp
                                                                 .ToList().AsEnumerable(), MainGridProgressBar, LabelInfo);
 
                 var result = Items.Except(items).Concat(items); // remove items and add them at the end
-                JsonHandler.WriteItems(result);
+                JsonHandler.WriteItemsAsync(result);
                 MainDataGrid.Dispatcher.Invoke(() => GridGUIUpdate());
             });
             MainDataGrid.Dispatcher.Invoke(() => GridGUIUpdate());
