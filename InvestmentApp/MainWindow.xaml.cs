@@ -49,7 +49,7 @@ namespace InvestmentApp
             Categories.Insert(0, MostraTutto);
             ComboBoxCats.SelectedItem = MostraTutto;
 
-            GridGUIUpdate();
+            MainDataGrid.Dispatcher.Invoke(() => GridGUIUpdate());
         }
 
         /// <summary>
@@ -89,8 +89,7 @@ namespace InvestmentApp
             {
                 for (int i = selectedItems.Count - 1; i >= 0; i--)
                 {
-                    var selectedItem = selectedItems[i] as Item;
-                    if (selectedItem != null)
+                    if (selectedItems[i] is Item selectedItem)
                     {
                         Items.Remove(selectedItem);
                     }
@@ -110,8 +109,7 @@ namespace InvestmentApp
             {
                 foreach (var selectedItem in selectedItems)
                 {
-                    var row = selectedItem as Item;
-                    if (row != null)
+                    if (selectedItem is Item row)
                         Scraping(row);
                 }
             }
@@ -130,8 +128,10 @@ namespace InvestmentApp
         /// </summary>
         private async void ButtonAddItem_Click(object sender, RoutedEventArgs e)
         {
-            AddWindow addWindow = new(ComboBoxCats.Text);
-            addWindow.Owner = this;
+            AddWindow addWindow = new(ComboBoxCats.Text)
+            {
+                Owner = this
+            };
 
             if (addWindow.ShowDialog() == true && addWindow.Item != null)
             {
@@ -160,8 +160,10 @@ namespace InvestmentApp
         /// </summary>
         private void ButtonEditCat_Click(object sender, RoutedEventArgs e)
         {
-            EditCatWindow newEditWindow = new();
-            newEditWindow.Owner = this;
+            EditCatWindow newEditWindow = new()
+            {
+                Owner = this
+            };
             newEditWindow.ShowDialog();
 
             Categories = new(JsonHandler.ReadCategoryAsync() ?? new List<Category>());
@@ -192,7 +194,7 @@ namespace InvestmentApp
         /// <summary>
         /// Aggiorna la GUI in base alla categoria attualmente selezionata
         /// </summary>
-        private async Task GridGUIUpdate()
+        private void GridGUIUpdate()
         {
             Items = ObservableCollectionConverter.ConvertIEnumerable(JsonHandler.ReadItems());
             Category selectedCategory = (Category)ComboBoxCats.SelectedItem;
@@ -226,7 +228,7 @@ namespace InvestmentApp
                     if (ComboBoxCats.SelectedItem != MostraTutto)
                         MainGridProgressBar.Maximum = Items.Count(item => item.Category == ComboBoxCats.Text);
                     else
-                        MainGridProgressBar.Maximum = Items.Count();
+                        MainGridProgressBar.Maximum = Items.Count;
                 });
 
                 string text = string.Empty;
@@ -244,43 +246,5 @@ namespace InvestmentApp
             });
             MainDataGrid.Dispatcher.Invoke(() => GridGUIUpdate());
         }
-
-        //private async void Scraping(Item? selectedItem = null)
-        //{
-        //    await Task.Run(async () =>
-        //    {
-        //        string text = string.Empty;
-        //        ComboBoxCats.Dispatcher.Invoke(() => text = ComboBoxCats.Text);
-
-        //        var groupedItems = Items.Where(item =>
-        //                                    selectedItem != null ?
-        //                                    selectedItem.Name == item.Name :
-        //                                    item.Category == (text != MostraTutto.Name ? text : item.Category))
-        //                                .GroupBy(item => item.Name).ToList();
-        //        var itemList = new List<Item>();
-        //        groupedItems.ForEach(items => itemList.Add(items.First()));
-
-        //        MainGridProgressBar.Dispatcher.Invoke(() =>
-        //        {
-        //            MainGridProgressBar.Visibility = Visibility.Visible;
-        //            MainGridProgressBar.Value = 0;
-        //            if (ComboBoxCats.SelectedItem != MostraTutto)
-        //                MainGridProgressBar.Maximum = itemList.Count(item => item.Category == ComboBoxCats.Text);
-        //            else
-        //                MainGridProgressBar.Maximum = itemList.Count;
-        //        });
-
-        //        var items = await PriceHandler.ScrapePricesAsync(itemList, MainGridProgressBar, LabelInfo,);
-        //        var result = Items.Except(items).Concat(items); // check variations
-
-        //        JsonHandler.WriteItems(result);
-        //        MainDataGrid.Dispatcher.Invoke(() =>
-        //        {
-        //            MainDataGrid.ToolTip = null;
-        //            GridGUIUpdate();
-        //        });
-        //    });
-        //    GridGUIUpdate();
-        //}
     }
 }

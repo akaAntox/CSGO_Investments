@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,34 +24,44 @@ namespace InvestmentApp.Handlers
         /// </summary>
         public static async Task<IEnumerable<Item>> ScrapePricesAsync(IEnumerable<Item> items, ProgressBar progressBar, Label informationLabel)
         {
-            return await Task.Run(() =>
-            {
-                HttpClient web = new();
-                Uri url = new(PricesLink);
-                bool exception = false;
+            HttpClient web = new();
+            Uri url = new(PricesLink);
+            int counter = 0;
+            int maxRetries = 3;
+            int delay = 1000;
+            Random random = new();
 
-                foreach (Item item in items)
+            foreach (Item item in items)
+            {
+                int retries = 0;
+                bool success = false;
+
+                while (!success && retries < maxRetries)
                 {
-                    if(item.Name != "Berlin 2019 Legends (Holo/Foil)") // not working
                     try
                     {
-                        progressBar.Dispatcher.Invoke(() =>
-                        {
-                            progressBar.Value++;
-                            progressBar.Foreground = Brushes.Green;
-                            informationLabel.Foreground = Brushes.Black;
-                            progressBar.ToolTip = informationLabel.Content = $"Scraping: {item.Name}";
-                        });
-
                         string? tmpItemName = HttpUtility.UrlEncode(item.Name);
                         string tmpUrl = url + tmpItemName;
 
-                        ApiResponse? doc = JsonConvert.DeserializeObject<ApiResponse>(web.GetStringAsync(tmpUrl).GetAwaiter().GetResult());
+                        ApiResponse? doc = JsonConvert.DeserializeObject<ApiResponse>(await web.GetStringAsync(tmpUrl));
                         if (doc != null && doc.Success)
                         {
                             item.SellPrice = doc.LowestPrice;
                             item.MediumPrice = doc.MedianPrice;
+                            success = true;
+
+                            progressBar.Dispatcher.Invoke(() =>
+                            {
+                                progressBar.Value++;
+                                progressBar.Foreground = Brushes.Green;
+                                informationLabel.Foreground = Brushes.Black;
+                                informationLabel.Content = $"Scraping: {item.Name}";
+                                progressBar.ToolTip = $"{counter++} / {items.Count()}";
+                            });
                         }
+
+                        delay = 3000;
+                        await Task.Delay(delay);
                     }
                     catch (HttpRequestException requestException)
                     {
@@ -59,32 +70,38 @@ namespace InvestmentApp.Handlers
 
                         progressBar.Dispatcher.Invoke(() =>
                         {
-                            progressBar.Value++;
-                            progressBar.Foreground = Brushes.Red;
                             informationLabel.Foreground = Brushes.Red;
                             progressBar.ToolTip = informationLabel.Content;
-                            informationLabel.Content = progressBar.ToolTip = $"{requestException.StatusCode} on item \"{item.Name}\"";
+                            informationLabel.Content = progressBar.ToolTip = $"{requestException.StatusCode} on item \"{item.Name}\" (retry {retries + 1}/{maxRetries})";
                         });
 
-                        exception = true;
-                        break;
+                        retries++;
+                        delay = (int)Math.Pow(2, retries) * 1000; // Exponential backoff: double the delay after each retry
+                        await Task.Delay(delay);
                     }
-                    Thread.Sleep(3000); // temp solution to toomanyitemsrequested error
                 }
 
-                if (!exception)
+                if (!success)
                 {
                     progressBar.Dispatcher.Invoke(() =>
                     {
-                        progressBar.Value = 0;
-                        informationLabel.Foreground = Brushes.Green;
-                        informationLabel.Content = "Done scraping!";
-                        progressBar.ToolTip = null;
+                        progressBar.Foreground = Brushes.Red;
+                        progressBar.ToolTip = informationLabel.Content;
+                        informationLabel.Foreground = Brushes.Red;
+                        informationLabel.Content = progressBar.ToolTip = $"Scraping failed for item \"{item.Name}\"";
                     });
                 }
+            }
 
-                return items;
+            progressBar.Dispatcher.Invoke(() =>
+            {
+                progressBar.Value = 0;
+                informationLabel.Foreground = Brushes.Green;
+                informationLabel.Content = "Done scraping!";
+                progressBar.ToolTip = null;
             });
+
+            return items;
         }
 
         /// <summary>
