@@ -1,4 +1,5 @@
-﻿using InvestmentApp.Handlers;
+﻿using InvestmentApp.Converters;
+using InvestmentApp.Handlers;
 using InvestmentApp.Models;
 using System;
 using System.Collections.Generic;
@@ -15,7 +16,7 @@ namespace InvestmentApp
     /// </summary>
     public partial class MainWindow : Window
     {
-        private readonly ObservableCollection<Item> Items;
+        private ObservableCollection<Item> Items;
         private ObservableCollection<Category> Categories;
         private readonly Category MostraTutto = new() { Name = "Mostra tutto" };
 
@@ -30,17 +31,17 @@ namespace InvestmentApp
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error reading categories from file: {ex.Message}");
+                MessageBox.Show($"Error reading categories from file: {ex.Message}", "Categories", MessageBoxButton.OK, MessageBoxImage.Error);
                 Categories = new ObservableCollection<Category>();
             }
 
             try
             { 
-                Items = new(JsonHandler.ReadItemsAsync() ?? new List<Item>()); 
+                Items = new(JsonHandler.ReadItems() ?? new List<Item>()); 
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error reading items from file: {ex.Message}");
+                MessageBox.Show($"Error reading items from file: {ex.Message}", "Objects", MessageBoxButton.OK, MessageBoxImage.Error);
                 Items = new ObservableCollection<Item>();
             }
 
@@ -191,8 +192,9 @@ namespace InvestmentApp
         /// <summary>
         /// Aggiorna la GUI in base alla categoria attualmente selezionata
         /// </summary>
-        private void GridGUIUpdate()
+        private async Task GridGUIUpdate()
         {
+            Items = ObservableCollectionConverter.ConvertIEnumerable(JsonHandler.ReadItems());
             Category selectedCategory = (Category)ComboBoxCats.SelectedItem;
             if (selectedCategory != null)
             {

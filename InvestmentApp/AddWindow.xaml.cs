@@ -27,7 +27,7 @@ namespace InvestmentApp
             { Categories = new(); }
 
             try
-            { Items = new(JsonHandler.ReadItemsAsync()); }
+            { Items = new(JsonHandler.ReadItems()); }
             catch (Exception)
             { Items = new(); }
 

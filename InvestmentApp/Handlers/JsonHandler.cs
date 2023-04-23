@@ -23,7 +23,7 @@ namespace InvestmentApp.Handlers
             }
         }
 
-        public static IEnumerable<Item>? ReadItemsAsync(string fileName = @"objects.json")
+        public static IEnumerable<Item>? ReadItems(string fileName = @"objects.json")
         {
             try
             {
