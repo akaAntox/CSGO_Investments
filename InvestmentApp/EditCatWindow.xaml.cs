@@ -18,7 +18,7 @@ namespace InvestmentApp
 
             try
             {
-                Categories = new(JsonHandler.ReadCategoryAsync());
+                Categories = new(JsonHandler.ReadCategory());
                 Categories.CollectionChanged += Categories_CollectionChanged;
             }
             catch (Exception ex)

@@ -4,13 +4,14 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace InvestmentApp.Handlers
 {
     public static class JsonHandler
     {
-        public static async void WriteItemsAsync(IEnumerable<Item> items, string fileName = @"objects.json")
+        public static async Task WriteItemsAsync(IEnumerable<Item> items, string fileName = @"objects.json")
         {
             try
             {
@@ -50,7 +51,7 @@ namespace InvestmentApp.Handlers
             }
         }
 
-        public static IEnumerable<Category>? ReadCategoryAsync(string fileName = @"categories.json")
+        public static IEnumerable<Category>? ReadCategory(string fileName = @"categories.json")
         {
             try
             {

@@ -26,7 +26,7 @@ namespace InvestmentApp
 
             try
             {
-                Categories = new(JsonHandler.ReadCategoryAsync() ?? new List<Category>());
+                Categories = new(JsonHandler.ReadCategory() ?? new List<Category>());
                 Categories.CollectionChanged += Categories_CollectionChanged;
             }
             catch (Exception ex)
@@ -82,7 +82,7 @@ namespace InvestmentApp
         /// <summary>
         /// Elimina elemento dalla datagridview (contextmenu)
         /// </summary>
-        private void DeleteItem_Click(object sender, RoutedEventArgs e)
+        private async void DeleteItem_Click(object sender, RoutedEventArgs e)
         {
             var selectedItems = MainDataGrid.SelectedItems;
             if (selectedItems != null && selectedItems.Count > 0)
@@ -94,9 +94,9 @@ namespace InvestmentApp
                         Items.Remove(selectedItem);
                     }
                 }
-                MainDataGrid.Dispatcher.Invoke(() => GridGUIUpdate());
-                JsonHandler.WriteItemsAsync(Items);
+                await JsonHandler.WriteItemsAsync(Items);
             }
+            MainDataGrid.Dispatcher.Invoke(() => GridGUIUpdate());
         }
 
         /// <summary>
@@ -150,9 +150,9 @@ namespace InvestmentApp
                     Items.Add(addWindow.Item);
                 }
 
-                JsonHandler.WriteItemsAsync(Items);
-                MainDataGrid.Dispatcher.Invoke(() => GridGUIUpdate());
+                await JsonHandler.WriteItemsAsync(Items);
             }
+            MainDataGrid.Dispatcher.Invoke(() => GridGUIUpdate());
         }
 
         /// <summary>
@@ -166,7 +166,7 @@ namespace InvestmentApp
             };
             newEditWindow.ShowDialog();
 
-            Categories = new(JsonHandler.ReadCategoryAsync() ?? new List<Category>());
+            Categories = new(JsonHandler.ReadCategory() ?? new List<Category>());
 
             ComboBoxCats.ItemsSource = Categories;
             Categories.Insert(0, MostraTutto);
@@ -241,8 +241,7 @@ namespace InvestmentApp
                                                                 .ToList().AsEnumerable(), MainGridProgressBar, LabelInfo);
 
                 var result = Items.Except(items).Concat(items); // remove items and add them at the end
-                JsonHandler.WriteItemsAsync(result);
-                MainDataGrid.Dispatcher.Invoke(() => GridGUIUpdate());
+                await JsonHandler.WriteItemsAsync(result);
             });
             MainDataGrid.Dispatcher.Invoke(() => GridGUIUpdate());
         }

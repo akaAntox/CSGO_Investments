@@ -20,7 +20,7 @@ namespace InvestmentApp
 
             try
             {
-                Categories = new(JsonHandler.ReadCategoryAsync());
+                Categories = new(JsonHandler.ReadCategory());
                 Categories.CollectionChanged += Categories_CollectionChanged;
             }
             catch (Exception)
@@ -93,7 +93,7 @@ namespace InvestmentApp
             newEditWindow.Owner = this;
             newEditWindow.ShowDialog();
 
-            Categories = new(JsonHandler.ReadCategoryAsync());
+            Categories = new(JsonHandler.ReadCategory());
             ComboBoxCat.ItemsSource = Categories;
         }
     }
